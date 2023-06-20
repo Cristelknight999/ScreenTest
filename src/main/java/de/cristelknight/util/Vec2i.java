@@ -67,4 +67,12 @@ public class Vec2i {
     public Vec2i negated() {
         return new Vec2i(-this.x, -this.y);
     }
+
+    @Override
+    public String toString() {
+        return "Vec2i{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

@@ -7,12 +7,12 @@ import de.cristelknight.util.Vec2i;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
+import java.util.List;
 
 public class Game {
 
-    public HashMap<Vec2i, Color> MAP = new HashMap<>();
+    public Map<Vec2i, Color> MAP = new HashMap<>();
 
     private Part currentPart = null;
 
@@ -33,6 +33,7 @@ public class Game {
             for(Vec2i vec2 : currentPart.getPositions()){
                 MAP.put(vec2, currentPart.getColor());
             }
+            isLineCompleted();
             currentPart = null;
             currentPartDown = false;
             action = Action.NONE;
@@ -46,7 +47,6 @@ public class Game {
 
         if(action.equals(Action.R_RIGHT)){
             currentPart.rotateClockwise(MAP.keySet());
-            System.out.println("rotated");
         }
         else if(action.equals(Action.R_LEFT)){
             currentPart.rotateCounterClockwise(MAP.keySet());
@@ -56,14 +56,83 @@ public class Game {
         currentPart.tick(MAP.keySet());
     }
 
+    public boolean isLineCompleted() {
+        for(int i = 0; i < Tetris.GAME_HEIGHT; i++){
+            boolean bl = isLineCompleted(i);
+            if(bl){
+                removeAndShiftLine(i);
+                System.out.println("Line: " + i + " completed!");
+            }
+        }
+
+        // If all positions in the row are occupied by cubes, return true
+        return true;
+    }
+
+    public void removeAndShiftLine(int completedRow) {
+        // Remove the completed line from the map
+        List<Vec2i> positionsToRemove = new ArrayList<>();
+        for (Map.Entry<Vec2i, Color> entry : MAP.entrySet()) {
+            Vec2i position = entry.getKey();
+            if (position.y == completedRow) {
+                positionsToRemove.add(position);
+            }
+        }
+        for (Vec2i position : positionsToRemove) {
+            MAP.remove(position);
+        }
+
+        // Shift the blocks above the completed line downwards
+        Map<Vec2i, Color> shiftedMap = new HashMap<>();
+        for (Map.Entry<Vec2i, Color> entry : MAP.entrySet()) {
+            Vec2i position = entry.getKey();
+            int row = position.y;
+            if (row < completedRow) {
+                Vec2i newPosition = new Vec2i(position.x, row + 1);
+                shiftedMap.put(newPosition, entry.getValue());
+            } else {
+                shiftedMap.put(position, entry.getValue());
+            }
+        }
+        MAP = shiftedMap;
+    }
+
+    public boolean isLineCompleted(int row) {
+        for (int col = 0; col < Tetris.GAME_WIDTH; col++) {
+
+            Vec2i position = new Vec2i(col, row);
+
+            boolean contains = false;
+            for(Vec2i vec2i : MAP.keySet()){
+                if(vec2i.equals(position)) contains = true;
+            }
+
+
+
+            if(contains) System.out.println("Block at: " + position);
+            else System.out.println("No block at: " + position);
+
+
+
+            if (!contains) {
+                //System.out.println("Line: " + row + " not complete!");
+                // If any position in the row is not occupied by a cube, return false
+                return false;
+            }
+        }
+        // If all positions in the row are occupied by cubes, return true
+        System.out.println("Line at: " + row);
+        return true;
+    }
+
     public void keyPressed(KeyEvent e) {
         int kC = e.getKeyCode();
 
         if(kC == KeyEvent.VK_SPACE){
             moveQuick = true;
-        } else if (kC == KeyEvent.VK_DOWN) {
+        }/* else if (kC == KeyEvent.VK_DOWN) {
             setAction(Action.PUT_DOWN);
-        } else if (kC == KeyEvent.VK_A) {
+        } */else if (kC == KeyEvent.VK_A) {
             setAction(Action.R_LEFT);
         } else if (kC == KeyEvent.VK_D) {
             setAction(Action.R_RIGHT);
