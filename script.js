@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const matchingFiles = await response.json();
         displayResults(matchingFiles);
       } else {
-        console.error('Error searching for files');
+        console.error('Error searching for files' + JSON.stringify({ repoOwner, repoName, searchTerm }));
       }
     } catch (error) {
       console.error(error);
