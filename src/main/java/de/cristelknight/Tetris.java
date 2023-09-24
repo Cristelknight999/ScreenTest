@@ -22,6 +22,8 @@ public class Tetris extends JFrame {
 
     public boolean isFullscreen = true;
 
+
+
     public Tetris() {
         setTitle("Tetris?");
         toggleFullscreen(false);

@@ -12,6 +12,21 @@ import java.util.List;
 
 public class Game {
 
+
+
+
+    public static void main(String[] args) {
+        double number = 750.0;
+        double maximum = 132.0;
+
+        double step = 1 / maximum;
+
+
+
+
+        System.out.println("Scaled number: " + number * step);
+    }
+
     public Map<Vec2i, Color> MAP = new HashMap<>();
 
     private Part currentPart = null;
